@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Four</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: d;
+            text-align: center;
+            background-color : white;
+            margin: 0;
+            padding: 0;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(7, 60px);
+            grid-gap: 5px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .cell.player1 {
+            background-color:Orangered;
+        }
+        .cell.player2 {
+            background-color:yellow ;
+        }
+        .message {
+            font-size: 24px;
+            margin: 20px 0;
+            color: Goldenrod  /* Change the message color here */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4cCqgh8DTm5vJZWX5A4lktwra_26rXYjenQ&s");
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Ensure the body takes up the full viewport height */
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        h1 {
+            font-family: 'Lobster', cursive;
+        }
+
+        button:hover {
+            background-color: Pink;
+        }
+        @keyframes jump {
+            0% { transform: translateY(-100px); opacity: 0; }
+            50% { transform: translateY(10px); opacity: 0.5; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 46px;
+            color: Gold;
+            animation: jump 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <h1>Connect Four</h1>
+    <div class="board" id="board"></div>
+    <p class="message" id="message"></p>
+    <button onclick="resetGame()">Restart Game</button> 
+    <script>
+        const ROWS = 6;
+        const COLS = 7;
+        let board = [];
+        let currentPlayer = 1;
+        let gameActive = true;
+
+        const boardElement = document.getElementById('board');
+        const messageElement = document.getElementById('message');
+
+        function createBoard() {
+            board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.addEventListener('click', handleCellClick);
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+
+        function handleCellClick(e) {
+            if (!gameActive) return;
+
+            const col = parseInt(e.target.dataset.col);
+            const row = findAvailableRow(col);
+
+            if (row === -1) return;
+
+            board[row][col] = currentPlayer;
+            const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
+            cell.classList.add(`player${currentPlayer}`);
+
+            if (checkWin(row, col)) {
+                messageElement.textContent = `Player ${currentPlayer} wins!`;
+                gameActive = false;
+                return;
+            }
+
+            if (board.flat().every(cell => cell !== 0)) {
+                messageElement.textContent = 'It\'s a draw!';
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            messageElement.textContent = `Player ${currentPlayer}'s turn`;
+        }
+
+        function findAvailableRow(col) {
+            for (let row = ROWS - 1; row >= 0; row--) {
+                if (board[row][col] === 0) {
+                    return row;
+                }
+            }
+            return -1;
+        }
+
+        function checkWin(row, col) {
+            return (
+                checkDirection(row, col, 0, 1) || // Horizontal
+                checkDirection(row, col, 1, 0) || // Vertical
+                checkDirection(row, col, 1, 1) || // Diagonal \\
+                checkDirection(row, col, 1, -1)   // Diagonal //
+            );
+        }
+
+        function checkDirection(row, col, rowDir, colDir) {
+            let count = 1;
+
+            count += countInDirection(row, col, rowDir, colDir);
+            count += countInDirection(row, col, -rowDir, -colDir);
+
+            return count >= 4;
+        }
+
+        function countInDirection(row, col, rowDir, colDir) {
+            let count = 0;
+            let r = row + rowDir;
+            let c = col + colDir;
+
+            while (r >= 0 && r < ROWS && c >= 0 && c < COLS && board[r][c] === currentPlayer) {
+                count++;
+                r += rowDir;
+                c += colDir;
+            }
+
+            return count;
+        }
+
+        function resetGame() {
+            createBoard();
+            currentPlayer = 1;
+            gameActive = true;
+            messageElement.textContent = `Player ${currentPlayer}'s turn`;
+        }
+
+        createBoard();
+        messageElement.textContent = `Player ${currentPlayer}'s turn`;
+    </script>
+</body>
+</html>
