@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive To-Do App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #a2d9ce);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #ffffff;
+            color: #444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #74ebd5;
+        }
+
+        input[type="text"] {
+            width: 75%;
+            padding: 10px;
+            border: 2px solid #74ebd5;
+            border-radius: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #74ebd5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #5ac3b0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        li {
+            background: #74ebd5;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        li.completed {
+            background: #a2d9ce;
+            color: #444;
+        }
+
+        .delete-btn, .reminder-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .reminder-btn {
+            background: #f4c542;
+        }
+
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+
+        .reminder-btn:hover {
+            background: #d9a432;
+        }
+
+        .reminder-btn.strikethrough {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <input type="text" id="taskInput" placeholder="Enter a new task">
+        <button onclick="addTask()">Add</button>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+
+            if (taskText === '') {
+                alert('Please enter a task!');
+                return;
+            }
+
+            const taskList = document.getElementById('taskList');
+            const listItem = document.createElement('li');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    reminderBtn.classList.add('strikethrough');
+                } else {
+                    reminderBtn.classList.remove('strikethrough');
+                }
+            });
+
+            const taskSpan = document.createElement('span');
+            taskSpan.textContent = taskText;
+
+            const reminderBtn = document.createElement('button');
+            reminderBtn.textContent = 'Reminder';
+            reminderBtn.classList.add('reminder-btn');
+            reminderBtn.addEventListener('click', () => {
+                alert('Reminder set for: ' + taskText);
+            });
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.addEventListener('click', () => {
+                taskList.removeChild(listItem);
+            });
+
+            listItem.appendChild(checkbox);
+            listItem.appendChild(taskSpan);
+            listItem.appendChild(reminderBtn);
+            listItem.appendChild(deleteBtn);
+            taskList.appendChild(listItem);
+
+            taskInput.value = '';
+        }
+    </script>
+</body>
+</html>
